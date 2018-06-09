@@ -1,6 +1,7 @@
 package com.debasish.guitardhun.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +23,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -88,6 +91,7 @@ public class SignUpScreen extends AppCompatActivity {
     // Function responsible for handling the sign up success
     public void onSignUpSuccess() {
         LoaderUtils.dismissProgress();
+        Toast.makeText(getBaseContext(), "Registration Successful.", Toast.LENGTH_LONG).show();
         btnSignUp.setEnabled(false);
         finish();
     }
@@ -140,35 +144,6 @@ public class SignUpScreen extends AppCompatActivity {
     public void registerUser(final String email,
                              final String password,
                              final String userFullName){
-        /*firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-                            String uId = null;
-
-                            if(user != null){
-                                uId = user.getUid();
-                                UserModel userModel = new UserModel();
-                                userModel.setUserId(uId);
-                                userModel.setUserFullName(userFullName);
-                                userModel.setEmail(email);
-                                // Storing User Details
-                                storeUserInfo(uId, userModel);
-                            }
-                            onSignUpSuccess();
-                           // updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            onSignupFailed();
-                            //updateUI(null);
-                        }
-                    }
-                });*/
-
-
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -176,14 +151,28 @@ public class SignUpScreen extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = firebaseAuth.getCurrentUser();
+                            String uId = null;
+                            ArrayList<String> favorites = new ArrayList<>();
+                            favorites.add("63042");
+
+                            if(user != null){
+                                uId = user.getUid();
+                                UserModel userModel = new UserModel();
+                                userModel.setUserId(uId);
+                                userModel.setUserFullName(userFullName);
+                                userModel.setEmail(email);
+                                userModel.setFavorites(favorites);
+                                // Storing User Details
+                                storeUserInfo(uId, userModel);
+                                // Storing the user details locally
+                                storingUserDetails(uId, email, userFullName, favorites);
+
+                            }
                             onSignUpSuccess();
                         } else {
                             // If sign in fails, display a message to the user.
                             onSignupFailed();
                         }
-                        // [START_EXCLUDE]
-                        LoaderUtils.dismissProgress();
-                        // [END_EXCLUDE]
                     }
                 });
     }
@@ -198,5 +187,20 @@ public class SignUpScreen extends AppCompatActivity {
         // pushing user to 'users' node using the userId
         mDatabase.child(userId).setValue(userModel);
     }
+
+    // Storing UserDetails
+    public void storingUserDetails(String userId,
+                                   String userEmail,
+                                   String userFullName,
+                                   ArrayList<String> favorites){
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("userId", userId);
+        editor.putString("userEmail", userEmail);
+        editor.putString("userFullName", userFullName);
+        editor.putString("userFavorites", favorites.toString());
+        editor.commit();
+    }
+
 }
 

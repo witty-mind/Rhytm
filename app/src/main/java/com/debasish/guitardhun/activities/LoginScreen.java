@@ -1,6 +1,7 @@
 package com.debasish.guitardhun.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.debasish.guitardhun.R;
+import com.debasish.guitardhun.models.GuitarDetailsModel;
 import com.debasish.guitardhun.models.UserModel;
 import com.debasish.guitardhun.utils.LoaderUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,8 +22,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,10 +61,10 @@ public class LoginScreen extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login_screen);
         ButterKnife.bind(this);
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
         firebaseAuth = FirebaseAuth.getInstance();
 
-        etEmail.setText("debasish@gmail.com");
+        etEmail.setText("debasish.das@gmail.com");
         etPassword.setText("1234567890");
     }
 
@@ -75,13 +82,13 @@ public class LoginScreen extends AppCompatActivity {
         String email = etEmail.getText().toString();
         String password = etPassword.getText().toString();
 
-        //signIn(email, password);
+        signIn(email, password);
 
-        UserModel userModel = new UserModel();
+        /*UserModel userModel = new UserModel();
         userModel.setUserId("123");
         userModel.setUserFullName("userFullName");
         userModel.setEmail("email");
-        storeUserInfo("123", userModel);
+        storeUserInfo("123", userModel);*/
     }
 
     public void signIn(final String email, final String password){
@@ -92,15 +99,55 @@ public class LoginScreen extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = firebaseAuth.getCurrentUser();
-                            onLoginSuccess();
+                            String userId = user.getUid();
+                            fetchUserDetails(userId);
                         } else {
                             // If sign in fails, display a message to the user.
                             onLoginFailed();
                         }
                     }
-
-
                 });
+    }
+
+    // Function responsible fro fetching the guitar details
+    public void fetchUserDetails(final String userId){
+        LoaderUtils.showProgressBar(LoginScreen.this, "Please wait while fetching the details..");
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                UserModel user = dataSnapshot.getValue(UserModel.class);
+                String userEmail = user.getEmail();
+                String userFullName = user.getUserFullName();
+                ArrayList<String> favoritesData = user.getFavorites();
+                storingUserDetails(userId, userEmail, userFullName, favoritesData);
+                onLoginSuccess();
+                Log.d("HomeScreen", "Value is: " + user.toString());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                LoaderUtils.dismissProgress();
+                // Failed to read value
+                Log.w("HomeScreen", "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    // Storing UserDetails
+    public void storingUserDetails(String userId,
+                                   String userEmail,
+                                   String userFullName,
+                                   ArrayList<String> favorites){
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("userId", userId);
+        editor.putString("userEmail", userEmail);
+        editor.putString("userFullName", userFullName);
+        editor.putString("userFavorites", favorites.toString());
+        editor.commit();
     }
 
     /**
@@ -125,7 +172,8 @@ public class LoginScreen extends AppCompatActivity {
         LoaderUtils.dismissProgress();
         btnSignIn.setEnabled(false);
         Toast.makeText(getBaseContext(), "Successfully logged in", Toast.LENGTH_LONG).show();
-        //finish();
+        finish();
+        startActivity(new Intent(LoginScreen.this, HomeScreen.class));
     }
 
     public void onLoginFailed() {
@@ -158,4 +206,6 @@ public class LoginScreen extends AppCompatActivity {
 
         return valid;
     }
+
+
 }

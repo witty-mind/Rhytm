@@ -1,8 +1,10 @@
 package com.debasish.guitardhun.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -284,14 +286,21 @@ public class SplashScreen extends AppCompatActivity {
      * Redirect the user to login screen
      */
     public void redirectUser() {
+
+        final String userId = getUserInfo();
         Timer t = new Timer();
         t.schedule(new TimerTask() {
             @Override
             public void run() {
+                if(TextUtils.isEmpty(userId)){
+                    startActivity(new Intent(SplashScreen.this, LoginScreen.class));
+                }else{
+                    startActivity(new Intent(SplashScreen.this, HomeScreen.class));
+                }
                 SplashScreen.this.finish();
-                startActivity(new Intent(SplashScreen.this, HomeScreen.class));
             }
         }, 3000);
+
     }
 
     public void addProducts() {
@@ -333,5 +342,10 @@ public class SplashScreen extends AppCompatActivity {
             //mDatabase.child(modelNo).setValue(guitarDetailsModel);
         }
         add();
+    }
+
+    public String getUserInfo(){
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+        return pref.getString("userId", null);
     }
 }

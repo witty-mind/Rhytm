@@ -1,10 +1,13 @@
 package com.debasish.guitardhun.models;
 
+import java.util.ArrayList;
+
 public class UserModel {
 
     String userId;
     String userFullName;
     String email;
+    ArrayList<String> favorites;
 
     public String getUserId() {
         return userId;
@@ -28,5 +31,13 @@ public class UserModel {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public ArrayList<String> getFavorites() {
+        return favorites;
+    }
+
+    public void setFavorites(ArrayList<String> favorites) {
+        this.favorites = favorites;
     }
 }

@@ -59,7 +59,7 @@
         />
 
     <ImageView
-        android:id="@+id/addtoCart"
+        android:id="@+id/ivFavorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"

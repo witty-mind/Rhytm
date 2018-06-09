@@ -1,5 +1,7 @@
 package com.debasish.guitardhun.adapters;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,7 +14,11 @@ import android.widget.TextView;
 import android.widget.Filter;
 
 import com.debasish.guitardhun.R;
+import com.debasish.guitardhun.activities.HomeScreen;
 import com.debasish.guitardhun.models.GuitarDetailsModel;
+import com.debasish.guitardhun.utils.LoaderUtils;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
 
@@ -24,11 +30,14 @@ public class ItemAdapter extends
 
     private ArrayList<GuitarDetailsModel> mArrayList;
     private ArrayList<GuitarDetailsModel> mFilteredList;
+    Context context;
+    DatabaseReference mDatabase;
 
 
-    public ItemAdapter(ArrayList<GuitarDetailsModel> arrayList) {
-        mArrayList = arrayList;
-        mFilteredList = arrayList;
+    public ItemAdapter(Context ctx, ArrayList<GuitarDetailsModel> arrayList) {
+        this.mArrayList = arrayList;
+        this.mFilteredList = arrayList;
+        this.context = ctx;
     }
 
 
@@ -40,19 +49,89 @@ public class ItemAdapter extends
         View view = LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.list_row, parent, false);
         return new ViewHolder(view);
-
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ItemAdapter.ViewHolder viewHolder,
-                                 int position) {
+    public void onBindViewHolder(@NonNull final ItemAdapter.ViewHolder viewHolder,
+                                 final int position) {
         viewHolder.tv_name.setText(mFilteredList.get(position).getName());
         viewHolder.tv_model.setText("Model: "+mFilteredList.get(position).getModelNo());
         viewHolder.tv_price.setText("INR "+mFilteredList.get(position).getPrice()+".00");
         String guitarImage = mFilteredList.get(position).getImage();
+        String guitarModel = mFilteredList.get(position).getModelNo().trim();
+
         if(guitarImage != null){
-            Picasso.get().load(guitarImage).into(viewHolder.guitarImage);
+            Picasso.get().load(guitarImage).into(viewHolder.ivGuitarImage);
         }
+
+        if(HomeScreen.favoriteArray != null &&
+                HomeScreen.favoriteArray.size() > 0 &&
+                HomeScreen.favoriteArray.contains(guitarModel)){
+            setFavoriteImage(viewHolder);
+        }
+
+        viewHolder.ivFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int pos = position;
+                boolean isAvailable = false;
+
+                GuitarDetailsModel guitarDetailsModel = mFilteredList.get(pos);
+                String modelNo = guitarDetailsModel.getModelNo();
+                if(HomeScreen.favoriteArray.contains(mFilteredList.get(pos).getModelNo())){
+                    int itemPos = getItemPos(mFilteredList.get(pos).getModelNo());
+                    HomeScreen.favoriteArray.remove(itemPos);
+                    isAvailable = true;
+                }else{
+                    HomeScreen.favoriteArray.add(mFilteredList.get(pos).getModelNo());
+                }
+
+                // Refreshing user Favorites
+                refreshUserFavorites();
+
+                // Updating user Favorites
+                updateUserFavorite(guitarDetailsModel, isAvailable, modelNo);
+
+                // Refreshing the Image
+                setFavoriteImage(viewHolder);
+            }
+        });
+    }
+
+    // Function responsible for refreshing the user Favorites
+    public void refreshUserFavorites(){
+        LoaderUtils.showProgressBar(context, "Please wait while updating..");
+        mDatabase = FirebaseDatabase.getInstance().getReference("users");
+        mDatabase.child(HomeScreen.userId).child("favorites").setValue(HomeScreen.favoriteArray);
+    }
+
+    // Function responsible for updating the user Favorites
+    public void updateUserFavorite(GuitarDetailsModel guitarDetailsModel,
+                                   boolean isAvailable, String modelNo){
+        if(!isAvailable){
+            mDatabase = FirebaseDatabase.getInstance().getReference("userwishlist");
+            mDatabase.child(HomeScreen.userId).child(modelNo).setValue(guitarDetailsModel);
+        }else{
+            mDatabase = FirebaseDatabase.getInstance().getReference("userwishlist");
+            mDatabase.child(HomeScreen.userId).child(modelNo).removeValue();
+        }
+        LoaderUtils.dismissProgress();
+    }
+
+    private int getItemPos(String category) {
+        return HomeScreen.favoriteArray.indexOf(category);
+    }
+
+    public void setFavoriteImage(ViewHolder viewHolder){
+        viewHolder.ivFavorite.setBackgroundResource(R.drawable.ic_favorite_red_400_24dp);
+    }
+
+    // Storing UserDetails
+    public void storingUserDetails(ArrayList<String> favorites){
+        SharedPreferences pref = context.getSharedPreferences("MyPref", 0); // 0 - for private mode
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("userFavorites", HomeScreen.favoriteArray.toString());
+        editor.commit();
     }
 
     @Override
@@ -65,6 +144,7 @@ public class ItemAdapter extends
 
         return new Filter() {
             @Override
+
             protected FilterResults performFiltering(CharSequence charSequence) {
                 String charString = charSequence.toString();
                 if (charString.isEmpty()) {
@@ -100,13 +180,15 @@ public class ItemAdapter extends
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         private TextView tv_name,tv_model,tv_price;
-        private ImageView guitarImage;
+        ImageView ivGuitarImage;
+        final ImageView ivFavorite;
         public ViewHolder(View view) {
             super(view);
-            guitarImage = (ImageView) view.findViewById(R.id.ivGuitarIcon);
+            ivGuitarImage = (ImageView) view.findViewById(R.id.ivGuitarIcon);
             tv_name = (TextView)view.findViewById(R.id.tvGuitarName);
             tv_model = (TextView)view.findViewById(R.id.tvGuitarModel);
             tv_price = (TextView)view.findViewById(R.id.tvGuitarPrice);
+            ivFavorite = (ImageView) view.findViewById(R.id.ivFavorite);
         }
     }
 }
