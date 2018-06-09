@@ -15,6 +15,7 @@ public class LoaderUtils {
         progressDialog = new ProgressDialog(ctx);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage(message);
+        progressDialog.setCancelable(false);
         progressDialog.show();
     }
 

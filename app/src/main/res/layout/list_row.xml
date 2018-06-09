@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white"
+    android:layout_marginTop="5dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginLeft="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/ivGuitarIcon"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="30dp"
+        android:layout_marginLeft="10dp"
         android:src="@mipmap/login_screen_bg"
         android:layout_centerVertical="true"
-        android:layout_width="70dp"
-        android:layout_height="70dp" />
+        android:layout_width="120dp"
+        android:layout_height="120dp" />
 
     <TextView
         android:id="@+id/tvGuitarName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/ivGuitarIcon"
         android:text="ABCDE"
-        android:textSize="17sp"
+        android:layout_marginRight="10dp"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:layout_marginTop="20dp"
         android:layout_marginLeft="10dp"
         />
 
@@ -30,8 +36,9 @@
         android:layout_below="@+id/tvGuitarName"
         android:layout_toRightOf="@+id/ivGuitarIcon"
         android:text="ABCDE"
-        android:textSize="12sp"
-        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:textSize="15sp"
+        android:layout_marginTop="5dp"
         android:layout_marginLeft="10dp"
         />
 
@@ -39,14 +46,26 @@
         android:id="@+id/tvGuitarPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="45dp"
+        android:layout_below="@+id/tvGuitarModel"
+        android:layout_marginTop="5dp"
         android:layout_marginRight="30dp"
+        android:layout_toRightOf="@+id/ivGuitarIcon"
         android:text="dsadsadsadsa"
-        android:layout_centerVertical="true"
         android:textColor="@color/md_red_300"
         android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         />
+
+    <ImageView
+        android:id="@+id/addtoCart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignBottom="@+id/tvGuitarPrice"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/ic_favorite_border_red_400_24dp"/>
 
 </RelativeLayout>
