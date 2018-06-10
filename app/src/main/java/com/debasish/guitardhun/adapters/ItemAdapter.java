@@ -26,12 +26,13 @@ import java.util.ArrayList;
 
 public class ItemAdapter extends
         RecyclerView.Adapter<ItemAdapter.ViewHolder>
-        implements Filterable {
+        implements Filterable  {
 
     private ArrayList<GuitarDetailsModel> mArrayList;
     private ArrayList<GuitarDetailsModel> mFilteredList;
     Context context;
     DatabaseReference mDatabase;
+    private ItemClickListener clickListener;
 
 
     public ItemAdapter(Context ctx, ArrayList<GuitarDetailsModel> arrayList) {
@@ -67,7 +68,7 @@ public class ItemAdapter extends
         if(HomeScreen.favoriteArray != null &&
                 HomeScreen.favoriteArray.size() > 0 &&
                 HomeScreen.favoriteArray.contains(guitarModel)){
-            setFavoriteImage(viewHolder);
+            setFavoriteImage(viewHolder, true);
         }
 
         viewHolder.ivFavorite.setOnClickListener(new View.OnClickListener() {
@@ -90,13 +91,11 @@ public class ItemAdapter extends
                 refreshUserFavorites();
 
                 // Updating user Favorites
-                updateUserFavorite(guitarDetailsModel, isAvailable, modelNo);
-
-                // Refreshing the Image
-                setFavoriteImage(viewHolder);
+                updateUserFavorite(guitarDetailsModel, isAvailable, modelNo, viewHolder);
             }
         });
     }
+
 
     // Function responsible for refreshing the user Favorites
     public void refreshUserFavorites(){
@@ -107,23 +106,32 @@ public class ItemAdapter extends
 
     // Function responsible for updating the user Favorites
     public void updateUserFavorite(GuitarDetailsModel guitarDetailsModel,
-                                   boolean isAvailable, String modelNo){
+                                   boolean isAvailable, String modelNo, ViewHolder viewHolder){
         if(!isAvailable){
             mDatabase = FirebaseDatabase.getInstance().getReference("userwishlist");
             mDatabase.child(HomeScreen.userId).child(modelNo).setValue(guitarDetailsModel);
+            // Refreshing the Image
+            setFavoriteImage(viewHolder, true);
         }else{
             mDatabase = FirebaseDatabase.getInstance().getReference("userwishlist");
             mDatabase.child(HomeScreen.userId).child(modelNo).removeValue();
+            // Refreshing the Image
+            setFavoriteImage(viewHolder, false);
         }
         LoaderUtils.dismissProgress();
     }
 
-    private int getItemPos(String category) {
+    public static int getItemPos(String category) {
         return HomeScreen.favoriteArray.indexOf(category);
     }
 
-    public void setFavoriteImage(ViewHolder viewHolder){
-        viewHolder.ivFavorite.setBackgroundResource(R.drawable.ic_favorite_red_400_24dp);
+    public void setFavoriteImage(ViewHolder viewHolder, boolean status){
+        if(status){
+            viewHolder.ivFavorite.setBackgroundResource(R.drawable.ic_favorite_red_400_24dp);
+        }else{
+            viewHolder.ivFavorite.setBackgroundResource(R.drawable.ic_favorite_border_red_400_24dp);
+        }
+
     }
 
     // Storing UserDetails
@@ -178,17 +186,35 @@ public class ItemAdapter extends
         };
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public void setClickListener(ItemClickListener itemClickListener) {
+        this.clickListener = itemClickListener;
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView tv_name,tv_model,tv_price;
         ImageView ivGuitarImage;
         final ImageView ivFavorite;
         public ViewHolder(View view) {
             super(view);
+            view.setOnClickListener(this);
             ivGuitarImage = (ImageView) view.findViewById(R.id.ivGuitarIcon);
             tv_name = (TextView)view.findViewById(R.id.tvGuitarName);
             tv_model = (TextView)view.findViewById(R.id.tvGuitarModel);
             tv_price = (TextView)view.findViewById(R.id.tvGuitarPrice);
             ivFavorite = (ImageView) view.findViewById(R.id.ivFavorite);
+            view.setTag(view);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (clickListener != null) clickListener.onClick(v, getAdapterPosition());
         }
     }
+
+    public interface ItemClickListener {
+        void onClick(View view, int position);
+    }
+
+
 }

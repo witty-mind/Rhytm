@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
-    android:background="@color/md_grey_300"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/md_grey_300"
     tools:context=".activities.HomeScreen">
 
     <android.support.design.widget.AppBarLayout
@@ -30,8 +30,8 @@
         android:layout_above="@+id/navigation"
         android:layout_below="@+id/appBar"
         android:layout_marginBottom="10dp"
-        android:scrollIndicators="none"
         android:layout_marginTop="5dp"
+        android:scrollIndicators="none"
         android:scrollbars="vertical"
         tools:layout_editor_absoluteX="0dp" />
 
@@ -42,10 +42,111 @@
         android:layout_above="@+id/navigation"
         android:layout_below="@+id/appBar"
         android:layout_marginBottom="10dp"
-        android:scrollIndicators="none"
         android:layout_marginTop="5dp"
+        android:scrollIndicators="none"
         android:scrollbars="vertical"
         tools:layout_editor_absoluteX="0dp" />
+
+
+    <RelativeLayout
+        android:id="@+id/layProfile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/navigation"
+        android:layout_below="@+id/appBar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="5">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="3"
+                android:background="@color/md_light_blue_400">
+
+                <ImageView
+                    android:id="@+id/ivPerson"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_person_white_48dp" />
+
+                <TextView
+                    android:id="@+id/tvFullName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/ivPerson"
+                    android:layout_centerInParent="true"
+                    android:text="Debasish Kumar Das"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/tvTitleEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:text="Email"
+                    android:textColor="@color/black"
+                    android:textSize="20dp" />
+
+                <TextView
+                    android:id="@+id/tvEmailValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tvTitleEmail"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="debasish.das@gmail.com" />
+
+                <TextView
+                    android:id="@+id/tvTitleUserId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tvEmailValue"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:text="User id"
+                    android:textColor="@color/black"
+                    android:textSize="20dp" />
+
+                <TextView
+                    android:id="@+id/tvUserId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tvTitleUserId"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="debasish.das@gmail.com" />
+
+                <Button
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="20dp"
+                    android:text="Logout"
+                    android:textColor="@color/white"
+                    android:background="@color/md_red_A200"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:id="@+id/btnLogout"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"/>
+
+
+            </RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
