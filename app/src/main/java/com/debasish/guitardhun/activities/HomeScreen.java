@@ -74,19 +74,21 @@ public class HomeScreen extends AppCompatActivity implements ItemAdapter.ItemCli
                     //ab.setTitle("Home");
                     handleViewVisibility(1);
                     hideMenuItems(false);
-
+                    toolbar.setTitle("Home");
                     fetchGuitarDetails();
                     return true;
                 case R.id.navigation_wishlist:
                    // ab.setTitle("DashBoard");
                     handleViewVisibility(2);
                     hideMenuItems(false);
+                    toolbar.setTitle("My WishList");
                     fetchUserWishList();
                     return true;
                 case R.id.navigation_notifications:
                     //ab.setTitle("Profile");
                     handleViewVisibility(3);
                     loadUserProfile();
+                    toolbar.setTitle("Profile");
                     hideMenuItems(true);
                     return true;
             }
@@ -159,7 +161,8 @@ public class HomeScreen extends AppCompatActivity implements ItemAdapter.ItemCli
             @Override
             public boolean onMenuItemClick(MenuItem item) {
 
-                Toast.makeText(HomeScreen.this, "Cart is Clicked", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(HomeScreen.this, "Cart is Clicked", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(HomeScreen.this, CartScreen.class));
                 return false;
             }
         });

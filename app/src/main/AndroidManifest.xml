@@ -24,7 +24,8 @@
             android:name=".activities.HomeScreen"
             android:label="@string/title_activity_home_screen" />
         <activity android:name=".activities.DetailsScreen" />
-        <activity android:name=".activities.CartScreen"></activity>
+        <activity android:name=".activities.CartScreen" />
+        <activity android:name=".activities.OrderConfirmation"></activity>
     </application>
 
 </manifest>

@@ -50,9 +50,10 @@
         android:textColor="@color/md_red_A200"
         android:textSize="15sp" />
 
-    <Spinner
+    <TextView
         android:layout_alignParentRight="true"
         android:id="@+id/sQty"
+        android:text="dsfdsfds"
         android:layout_marginRight="30dp"
         android:layout_centerVertical="true"
         android:layout_width="wrap_content"
@@ -68,8 +69,8 @@
         android:layout_marginLeft="10dp"
         android:background="@color/md_red_A200"
         android:layout_alignParentLeft="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="70dp"
+        android:layout_height="30dp"/>
 
 
 </RelativeLayout>

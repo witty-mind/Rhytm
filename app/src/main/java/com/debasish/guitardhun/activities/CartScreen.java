@@ -27,6 +27,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+import butterknife.OnClick;
 
 public class CartScreen extends AppCompatActivity {
 
@@ -38,6 +42,9 @@ public class CartScreen extends AppCompatActivity {
     CartAdapter cartAdapter;
     ArrayList<String> amountArray;
     @BindView(R.id.totalAmt) TextView tvTotalAmt;
+    @BindView(R.id.totalLay) RelativeLayout layTotalAmount;
+    public static Button btnPlaceOrder;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +54,9 @@ public class CartScreen extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        btnPlaceOrder = (Button) findViewById(R.id.btnPay);
         initViews();
-
         fetchCartData();
-
     }
 
     // Function responsible fro fetching the guitar details
@@ -66,7 +72,7 @@ public class CartScreen extends AppCompatActivity {
                 amountArray = new ArrayList<>();
                 for (DataSnapshot noteDataSnapshot : dataSnapshot.getChildren()) {
                     CartModel guitars = noteDataSnapshot.getValue(CartModel.class);
-                    amountArray.add(guitars.getItemPrice());
+                    amountArray.add(guitars.getTotalAmt());
                     cartModelArray.add(guitars);
                 }
 
@@ -94,9 +100,15 @@ public class CartScreen extends AppCompatActivity {
 
     // Setting up the adapter
     public void setUpAdapter() {
-        cartAdapter = new CartAdapter(CartScreen.this, cartModelArray);
-        cartList.setAdapter(cartAdapter);
-        calculateTotalAmt();
+        if(cartModelArray.size() != 0){
+            cartAdapter = new CartAdapter(CartScreen.this, cartModelArray);
+            cartList.setAdapter(cartAdapter);
+            calculateTotalAmt();
+            layTotalAmount.setVisibility(RelativeLayout.VISIBLE);
+        }else{
+            Toast.makeText(this, "There is no item in yor cart.", Toast.LENGTH_SHORT).show();
+            layTotalAmount.setVisibility(RelativeLayout.GONE);
+        }
     }
 
     @Override
@@ -105,12 +117,13 @@ public class CartScreen extends AppCompatActivity {
         return true;
     }
 
+    // Function responsible for calculating the total amount of the cart
     public void calculateTotalAmt(){
         int totalAmount = 0;
         for(int i = 0; i < amountArray.size(); i++){
             int value = Integer.parseInt(amountArray.get(i));
             totalAmount = totalAmount + value;
         }
-        tvTotalAmt.setText("Total Amount - INR "+ String.valueOf(totalAmount));
+        tvTotalAmt.setText("Total - INR "+ String.valueOf(totalAmount)+ ".00");
     }
 }

@@ -64,6 +64,8 @@ public class DetailsScreen extends AppCompatActivity {
     TextView tvAccPrice;
     @BindView(R.id.ivFavorite)
     ImageView ivFavorite;
+    @BindView(R.id.inCart)
+    ImageView ivCart;
     GuitarDetailsModel guitars;
     boolean isAddonClicked = false;
     DatabaseReference mDatabase;
@@ -91,8 +93,14 @@ public class DetailsScreen extends AppCompatActivity {
         DetailsScreen.this.finish();
     }
 
-    @OnClick(R.id.ivFavorite) void makeFavorite(){
+    @OnClick(R.id.ivFavorite)
+    void makeFavorite() {
         makeWishLIst();
+    }
+
+    @OnClick(R.id.inCart)
+    void cart() {
+        startActivity(new Intent(DetailsScreen.this, CartScreen.class));
     }
 
     @Override
@@ -100,15 +108,16 @@ public class DetailsScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details_screen);
         ButterKnife.bind(this);
+        // Fetching product details
         fetchProductDetail();
     }
 
-    public void makeWishLIst(){
-        if(HomeScreen.favoriteArray.contains(guitars.getModelNo())){
+    public void makeWishLIst() {
+        if (HomeScreen.favoriteArray.contains(guitars.getModelNo())) {
             int itemPos = ItemAdapter.getItemPos(guitars.getModelNo());
             HomeScreen.favoriteArray.remove(itemPos);
             isAvailable = true;
-        }else{
+        } else {
             HomeScreen.favoriteArray.add(guitars.getModelNo());
         }
 
@@ -116,20 +125,20 @@ public class DetailsScreen extends AppCompatActivity {
         refreshUserFavorites();
 
         // Updating user Favorites
-        updateUserFavorite(guitars, isAvailable,guitars.getModelNo());
+        updateUserFavorite(guitars, isAvailable, guitars.getModelNo());
     }
 
-    public void setFavoriteImage(boolean status){
-        if(status){
+    public void setFavoriteImage(boolean status) {
+        if (status) {
             ivFavorite.setBackgroundResource(R.drawable.ic_favorite_red_400_24dp);
-        }else{
+        } else {
             ivFavorite.setBackgroundResource(R.drawable.ic_favorite_border_red_400_24dp);
         }
 
     }
 
     // Function responsible for refreshing the user Favorites
-    public void refreshUserFavorites(){
+    public void refreshUserFavorites() {
         LoaderUtils.showProgressBar(DetailsScreen.this, "Please wait while updating..");
         mDatabase = FirebaseDatabase.getInstance().getReference("users");
         mDatabase.child(HomeScreen.userId).child("favorites").setValue(HomeScreen.favoriteArray);
@@ -137,12 +146,12 @@ public class DetailsScreen extends AppCompatActivity {
 
     // Function responsible for updating the user Favorites
     public void updateUserFavorite(GuitarDetailsModel guitarDetailsModel,
-                                   boolean isAvailable, String modelNo){
-        if(!isAvailable){
+                                   boolean isAvailable, String modelNo) {
+        if (!isAvailable) {
             mDatabase = FirebaseDatabase.getInstance().getReference("userwishlist");
             mDatabase.child(HomeScreen.userId).child(modelNo).setValue(guitarDetailsModel);
             setFavoriteImage(true);
-        }else{
+        } else {
             mDatabase = FirebaseDatabase.getInstance().getReference("userwishlist");
             mDatabase.child(HomeScreen.userId).child(modelNo).removeValue();
             setFavoriteImage(false);
@@ -163,13 +172,14 @@ public class DetailsScreen extends AppCompatActivity {
             cartModel.setItemModelNo(guitars.getModelNo());
             cartModel.setItemType(guitars.getType());
             cartModel.setItemPrice(guitars.getPrice());
+            cartModel.setTotalAmt(guitars.getPrice());
             cartModel.setQty("1");
-
         } else {
             cartModel.setItemName(guitars.getAccessoriesModel().getName());
             cartModel.setItemModelNo(guitars.getAccessoriesModel().getModelNo());
             cartModel.setItemType(guitars.getAccessoriesModel().getType());
             cartModel.setItemPrice(guitars.getAccessoriesModel().getPrice());
+            cartModel.setTotalAmt(guitars.getAccessoriesModel().getPrice());
             cartModel.setQty("1");
         }
         return cartModel;
@@ -200,6 +210,9 @@ public class DetailsScreen extends AppCompatActivity {
     }
 
 
+    /**
+     * Checking if the child is already exist
+     */
     public void checkAddonExistence() {
         DatabaseReference mDatabase =
                 FirebaseDatabase.getInstance().getReference("cart").child(HomeScreen.userId);
@@ -250,7 +263,6 @@ public class DetailsScreen extends AppCompatActivity {
                 guitars = dataSnapshot.getValue(GuitarDetailsModel.class);
                 Log.d("HomeScreen", "Value is: " + guitars.toString());
                 LoaderUtils.dismissProgress();
-
                 // Setting all the details data
                 setDataInView(guitars);
             }

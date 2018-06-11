@@ -7,6 +7,15 @@ public class CartModel {
     String itemType;
     String itemPrice;
     String qty;
+    String totalAmt;
+
+    public String getTotalAmt() {
+        return totalAmt;
+    }
+
+    public void setTotalAmt(String totalAmt) {
+        this.totalAmt = totalAmt;
+    }
 
     public String getQty() {
         return qty;
