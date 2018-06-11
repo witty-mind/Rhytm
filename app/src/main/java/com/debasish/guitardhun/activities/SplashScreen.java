@@ -68,7 +68,7 @@ public class SplashScreen extends AppCompatActivity {
     Hercules GSP50HB WALL GRIDS Guitar Hanger , Hercules GS414X Home Series Guitar Floor Stand*/
 
 
-    public void addAccessories() {
+   /* public void addAccessories() {
         nameArray.add("Harley Benton Parts Locking Tuners 6L Gold");
         nameArray.add("banez UTA20 Ultralite Tremolo Arm");
         nameArray.add("Behringer Pedal Board PB600");
@@ -278,7 +278,7 @@ public class SplashScreen extends AppCompatActivity {
         colorArray.add("SHELL PINK");
 
         addProducts();
-    }
+    }*/
 
 
     /**
@@ -303,7 +303,7 @@ public class SplashScreen extends AppCompatActivity {
 
     }
 
-    public void addProducts() {
+    /*public void addProducts() {
 
         for (int i = 0; i < 20; i++) {
             GuitarDetailsModel guitarDetailsModel = new GuitarDetailsModel();
@@ -342,7 +342,7 @@ public class SplashScreen extends AppCompatActivity {
             //mDatabase.child(modelNo).setValue(guitarDetailsModel);
         }
         add();
-    }
+    }*/
 
     public String getUserInfo(){
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
