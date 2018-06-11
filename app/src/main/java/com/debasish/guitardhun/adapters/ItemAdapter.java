@@ -29,7 +29,7 @@ public class ItemAdapter extends
         implements Filterable  {
 
     private ArrayList<GuitarDetailsModel> mArrayList;
-    private ArrayList<GuitarDetailsModel> mFilteredList;
+    public static ArrayList<GuitarDetailsModel> mFilteredList;
     Context context;
     DatabaseReference mDatabase;
     private ItemClickListener clickListener;
@@ -56,8 +56,8 @@ public class ItemAdapter extends
     public void onBindViewHolder(@NonNull final ItemAdapter.ViewHolder viewHolder,
                                  final int position) {
         viewHolder.tv_name.setText(mFilteredList.get(position).getName());
-        viewHolder.tv_model.setText("Model: "+mFilteredList.get(position).getModelNo());
-        viewHolder.tv_price.setText("INR "+mFilteredList.get(position).getPrice()+".00");
+        viewHolder.tv_model.setText("Model: "+ mFilteredList.get(position).getModelNo());
+        viewHolder.tv_price.setText("INR "+ mFilteredList.get(position).getPrice()+".00");
         String guitarImage = mFilteredList.get(position).getImage();
         String guitarModel = mFilteredList.get(position).getModelNo().trim();
 
@@ -144,15 +144,15 @@ public class ItemAdapter extends
 
     @Override
     public int getItemCount() {
-        return mArrayList.size();
+        return mFilteredList.size();
     }
 
     @Override
     public Filter getFilter() {
 
         return new Filter() {
-            @Override
 
+            @Override
             protected FilterResults performFiltering(CharSequence charSequence) {
                 String charString = charSequence.toString();
                 if (charString.isEmpty()) {
@@ -202,6 +202,7 @@ public class ItemAdapter extends
             tv_model = (TextView)view.findViewById(R.id.tvGuitarModel);
             tv_price = (TextView)view.findViewById(R.id.tvGuitarPrice);
             ivFavorite = (ImageView) view.findViewById(R.id.ivFavorite);
+            ivFavorite.setVisibility(View.GONE);
             view.setTag(view);
             view.setOnClickListener(this);
         }

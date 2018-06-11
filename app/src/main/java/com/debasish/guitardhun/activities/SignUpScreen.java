@@ -23,6 +23,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
@@ -39,7 +46,6 @@ public class SignUpScreen extends AppCompatActivity {
     @BindView(R.id.link_login) TextView tvLoginlink;
     private FirebaseAuth firebaseAuth;
 
-
     @OnClick (R.id.btn_signup) void signup(){
         signUp();
     }
@@ -47,7 +53,6 @@ public class SignUpScreen extends AppCompatActivity {
     @OnClick (R.id.link_login) void RedirectUser(){
         SignUpScreen.this.finish();
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +63,6 @@ public class SignUpScreen extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up_screen);
         ButterKnife.bind(this);
         firebaseAuth = FirebaseAuth.getInstance();
-
-        etName.setText("Debasish");
-        etEmail.setText("debasish@gmail.com");
-        etPassword.setText("1234567890");
     }
 
     // Function responsible for making the user register
@@ -72,9 +73,7 @@ public class SignUpScreen extends AppCompatActivity {
         }
 
         btnSignUp.setEnabled(false);
-
         LoaderUtils.showProgressBar(SignUpScreen.this, "Please Wait");
-
         String name = etName.getText().toString();
         String email = etEmail.getText().toString();
         String password = etPassword.getText().toString();
@@ -94,12 +93,13 @@ public class SignUpScreen extends AppCompatActivity {
         Toast.makeText(getBaseContext(), "Registration Successful.", Toast.LENGTH_LONG).show();
         btnSignUp.setEnabled(false);
         finish();
+        startActivity(new Intent(SignUpScreen.this, HomeScreen.class));
     }
 
     // Function responsible for handling the sign up failure
     public void onSignupFailed() {
         LoaderUtils.dismissProgress();
-        Toast.makeText(getBaseContext(), "Registration failed", Toast.LENGTH_LONG).show();
+        //Toast.makeText(getBaseContext(), "Registration failed", Toast.LENGTH_LONG).show();
         btnSignUp.setEnabled(true);
     }
 
@@ -172,6 +172,18 @@ public class SignUpScreen extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             onSignupFailed();
+
+                            try {
+                                throw task.getException();
+                            } catch(FirebaseAuthWeakPasswordException e) {
+                                Toast.makeText(SignUpScreen.this,e.getMessage().toString(),Toast.LENGTH_LONG).show();
+                            } catch(FirebaseAuthInvalidCredentialsException e) {
+                                Toast.makeText(SignUpScreen.this,e.getMessage().toString(),Toast.LENGTH_LONG).show();
+                            } catch(FirebaseAuthUserCollisionException e) {
+                                Toast.makeText(SignUpScreen.this,e.getMessage().toString(),Toast.LENGTH_LONG).show();
+                            } catch(Exception e) {
+                                Toast.makeText(SignUpScreen.this,e.getMessage().toString(),Toast.LENGTH_LONG).show();
+                            }
                         }
                     }
                 });

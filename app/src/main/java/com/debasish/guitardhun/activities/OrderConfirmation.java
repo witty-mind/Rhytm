@@ -39,6 +39,7 @@ import butterknife.OnClick;
 public class OrderConfirmation extends AppCompatActivity {
     @BindView (R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.btnGoBack) Button btnSuccess;
+    @BindView(R.id.tvOrderId) TextView tvOrderId;
 
     @OnClick (R.id.btnGoBack) void goBack(){
         OrderConfirmation.this.finish();
@@ -52,6 +53,9 @@ public class OrderConfirmation extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        // Displaying the order id
+        tvOrderId.setText("Your order id is "+ String.valueOf(CartAdapter.orderId));
     }
 
     @Override

@@ -81,7 +81,8 @@ public class DetailsScreen extends AppCompatActivity {
 
     @OnClick(R.id.addToCart)
     void addAddOnsToCart() {
-        LoaderUtils.showProgressBar(DetailsScreen.this, "Please wait while adding items to cart..");
+        LoaderUtils.showProgressBar(DetailsScreen.this,
+                "Please wait while adding items to cart..");
         // Checking the existence of the product
         checkAddonExistence();
         LoaderUtils.dismissProgress();

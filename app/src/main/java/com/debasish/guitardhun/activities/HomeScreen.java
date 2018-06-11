@@ -33,6 +33,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -74,21 +75,21 @@ public class HomeScreen extends AppCompatActivity implements ItemAdapter.ItemCli
                     //ab.setTitle("Home");
                     handleViewVisibility(1);
                     hideMenuItems(false);
-                    toolbar.setTitle("Home");
+                    toolbar.setTitle(R.string.title_activity_home_screen);
                     fetchGuitarDetails();
                     return true;
-                case R.id.navigation_wishlist:
+                /*case R.id.navigation_wishlist:
                    // ab.setTitle("DashBoard");
                     handleViewVisibility(2);
                     hideMenuItems(false);
                     toolbar.setTitle("My WishList");
                     fetchUserWishList();
-                    return true;
+                    return true;*/
                 case R.id.navigation_notifications:
                     //ab.setTitle("Profile");
                     handleViewVisibility(3);
                     loadUserProfile();
-                    toolbar.setTitle("Profile");
+                    toolbar.setTitle(R.string.title_profile);
                     hideMenuItems(true);
                     return true;
             }
@@ -107,6 +108,9 @@ public class HomeScreen extends AppCompatActivity implements ItemAdapter.ItemCli
         // Refreshing the views
         handleViewVisibility(1);
 
+        // Setting the toolbar title
+        toolbar.setTitle("Home");
+
         // Setting up Bottom nav bar
         BottomNavigationView navigation =
                 (BottomNavigationView) findViewById(R.id.navigation);
@@ -120,8 +124,6 @@ public class HomeScreen extends AppCompatActivity implements ItemAdapter.ItemCli
 
         // Fetching the User Favorites
         fetchUserFavorites();
-
-
     }
 
     // HIding the search menu
@@ -160,8 +162,6 @@ public class HomeScreen extends AppCompatActivity implements ItemAdapter.ItemCli
         shoppingCart.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-
-                //Toast.makeText(HomeScreen.this, "Cart is Clicked", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(HomeScreen.this, CartScreen.class));
                 return false;
             }
@@ -234,6 +234,7 @@ public class HomeScreen extends AppCompatActivity implements ItemAdapter.ItemCli
 
     // Function responsible fro fetching the guitar details
     public void fetchUserFavorites(){
+        LoaderUtils.showProgressBar(HomeScreen.this, "Please wait while fetching the details..");
         DatabaseReference mDatabase =
                 FirebaseDatabase.getInstance().getReference("users").child(userId);
         mDatabase.addValueEventListener(new ValueEventListener() {
@@ -293,9 +294,9 @@ public class HomeScreen extends AppCompatActivity implements ItemAdapter.ItemCli
 
     // Function responsible fro fetching the guitar details
     public void fetchGuitarDetails(){
-        LoaderUtils.showProgressBar(HomeScreen.this, "Please wait while fetching the details..");
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("guitars");
         guitarDetailsModels = new ArrayList<>();
+        setUpAdapter();
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -307,7 +308,7 @@ public class HomeScreen extends AppCompatActivity implements ItemAdapter.ItemCli
                     GuitarDetailsModel guitars = noteDataSnapshot.getValue(GuitarDetailsModel.class);
                     guitarDetailsModels.add(guitars);
                     // Setting the adapter
-                    setUpAdapter();
+                    itemAdapter.notifyDataSetChanged();
                 }
                 LoaderUtils.dismissProgress();
                 Log.d("HomeScreen", "Value is: " + guitarDetailsModels);
@@ -342,7 +343,7 @@ public class HomeScreen extends AppCompatActivity implements ItemAdapter.ItemCli
 
     @Override
     public void onClick(View v, int position) {
-        final GuitarDetailsModel guitar = guitarDetailsModels.get(position);
+        final GuitarDetailsModel guitar = itemAdapter.mFilteredList.get(position);
         Intent i = new Intent(this, DetailsScreen.class);
         productId = guitar.getModelNo();
         startActivity(i);

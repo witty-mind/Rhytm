@@ -63,9 +63,6 @@ public class LoginScreen extends AppCompatActivity {
         ButterKnife.bind(this);
         //getSupportActionBar().hide();
         firebaseAuth = FirebaseAuth.getInstance();
-
-        etEmail.setText("debasish.das@gmail.com");
-        etPassword.setText("1234567890");
     }
 
 

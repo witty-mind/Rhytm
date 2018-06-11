@@ -40,6 +40,7 @@ public class CartAdapter extends
             FirebaseDatabase.getInstance().getReference("cart").child(HomeScreen.userId);
     DatabaseReference mDatabaseOrder =
             FirebaseDatabase.getInstance().getReference("orders").child(HomeScreen.userId);
+    public static int orderId;
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -122,7 +123,7 @@ public class CartAdapter extends
                     orderData.add(cartList.get(i));
                 }
 
-                int orderId = RandomNumberGenerator.getRandomNumber();
+                orderId = RandomNumberGenerator.getRandomNumber();
 
                 // Placing the order
                 mDatabaseOrder.child(String.valueOf(orderId)).setValue(orderData);
